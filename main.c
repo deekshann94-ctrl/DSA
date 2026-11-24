@@ -1,98 +1,108 @@
+
 #include <stdio.h>
 #include <stdlib.h>
-struct node
-{
-    int data;
-    struct node*left;
-    struct node*right;
 
-};
-typedef struct node *NODE;
-NODE createBST(NODE root,int item)
+void heapify(int a[], int n)
 {
-    NODE temp,prev,cur;
-    temp=(NODE)malloc (sizeof(struct node));
-    temp->data=item;
-    temp->left=NULL;
-    temp->right=NULL;
-    if(root==NULL)
-        return temp;
-    prev=NULL;
-    cur=root;
-    while(cur!=NULL)
-    {
-        prev=cur;
-        if(item < cur->data)
-            cur=cur->left;
-        else
-            cur=cur->right;
-    }
-    if(item<prev->data)
-        prev->left=temp;
-    else
-        prev->right=temp;
-    return root;
+    int i, k, v, j, flag;
 
-}
-void preorder(NODE root)
-{
-    if (root!=NULL)
+    for (i = n / 2; i >= 1; i--)
     {
-        printf("%d\t",root->data);
-        preorder(root->left);
-        preorder(root->right);
+        k = i;
+        v = a[k];
+        flag = 0;
+
+        while (!flag && 2 * k <= n)
+        {
+            j = 2 * k;
+
+            if (j < n)
+            {
+                if (a[j] < a[j + 1])
+                    j = j + 1;
+            }
+
+            if (v >= a[j])
+                flag = 1;
+            else
+            {
+                a[k] = a[j];
+                k = j;
+            }
+        }
+
+        a[k] = v;
     }
 }
-void inorder(NODE root)
-{
-    if(root!=NULL)
-    {
-        inorder (root->left);
-        printf("%d\t",root->data);
-        inorder(root->right);
-    }
-}
-void postorder(NODE root)
-{
-    if(root!=NULL)
-    {
-        postorder(root->left);
-        postorder(root->right);
-        printf("%d\t",root->data);
-    }
-}
+
 int main()
 {
-    NODE root=NULL;
-    int ch,item;
-    for(;;)
+    int n = 0, a[10], i, ch;
+
+    for (;;)
     {
-        printf("\n 1.insert");
-        printf("\n 2.preorder");
-        printf("\n 3.inorder");
-        printf("\n 4.postorder");
-        printf("\n 5.exit");
-        printf("\n read a choice:");
-        scanf("%d",&ch);
-        switch(ch)
+        printf("\n\n1. Create a heap");
+        printf("\n2. Extract max");
+        printf("\n3. Exit");
+        printf("\nRead a choice: ");
+        scanf("%d", &ch);
+
+        switch (ch)
         {
             case 1:
-                printf("\n read element to be inserted:");
-                scanf("%d",&item);
-                root=createBST (root,item);
-                break;
-            case 2:printf("\n preorder traversal is \n");
-                  preorder (root);
-                  break;
-            case 3:printf("\n inorder traversal is \n");
-                  inorder (root);
-                  break;
-            case 4:printf("\n postorder traversal is \n");
-                  postorder (root);
-                  break;
-            default : exit(0);
+                printf("\nRead number of elements: ");
+                scanf("%d", &n);
 
+                if (n < 1 || n > 9)
+                {
+                    printf("\nInvalid number of elements!");
+                    n = 0;
+                    break;
+                }
+
+                printf("\nRead elements:\n");
+
+                for (i = 1; i <= n; i++)
+                    scanf("%d", &a[i]);
+
+                heapify(a, n);
+
+                printf("\nElements after constructing heap:\n");
+
+                for (i = 1; i <= n; i++)
+                    printf("%d\t", a[i]);
+
+                break;
+
+            case 2:
+                if (n >= 1)
+                {
+                    printf("\nElement deleted is %d", a[1]);
+
+                    a[1] = a[n];
+                    n--;
+
+                    heapify(a, n);
+
+                    printf("\nHeap after deletion:\n");
+
+                    for (i = 1; i <= n; i++)
+                        printf("%d\t", a[i]);
+                }
+                else
+                {
+                    printf("\nHeap is empty. No elements to delete.");
+                }
+
+                break;
+
+            case 3:
+                exit(0);
+
+            default:
+                printf("\nInvalid choice!");
         }
     }
+
     return 0;
 }
