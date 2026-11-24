@@ -2,102 +2,86 @@
 #include <stdlib.h>
 struct node
 {
-    int co,po;
-    struct node*addr;
+    int row,col,data;
+    struct node*next;
+    struct node*prev;
 
 };
-typedef struct node*NODE;
-NODE insertend (NODE start ,int co,int po)
+typedef struct node * NODE;
+NODE insertend(NODE start,int row ,int col,int item)
 {
     NODE temp ,current;
-    temp=(NODE)malloc (sizeof(struct node));
-    temp->co=co;
-    temp->po=po;
-    temp->addr=NULL;
+    temp=(NODE)malloc(sizeof(struct node));
+    temp->row=row;
+    temp->col=col;
+    temp->data=item;
+    temp->prev=NULL;
+    temp->next=NULL;
     if(start==NULL)
         return temp;
     current=start;
-    while(current->addr!=NULL)
-        current=current->addr;
-
+    while (current->next!=NULL)
+        current=current->next;
+    current->next=temp;
+    temp->prev=current;
+    return start;
 }
-void display(NODE start)
+void display (NODE start)
 {
-
     NODE temp;
-    if(start==NULL)
-        printf("\n polynomial empty");
+    if (start==NULL)
+        printf("\n list is empty");
     else
     {
+        printf("\n row\t col\t data\n");
         temp=start;
-        while(temp->addr!=NULL)
+        while(temp!=NULL)
         {
-            printf("%d*^%d+",temp->co,temp->po);
-            temp=temp->addr;
+            printf("%d\t%d\t%d\n",temp->row,temp->col,temp->data);
+            temp=temp->next;
         }
-        printf("%d*x^%d",temp->co,temp->po);
     }
 
 }
-NODE addterm (NODE res,int co ,int po)
+void displaymatrix(NODE start,int m,int n)
 {
-    NODE temp ,current;
-    temp=(NODE)malloc (sizeof (struct node));
-    temp->co=co;
-    temp->po=po;
-    temp->addr=NULL;
-    if(res==NULL)
-        return temp;
-    current=res;
-    while(current!=NULL){
-        if (current->po==po)
-        {
-            current->co=current->co+co;
-            return res;
-        }
-        current=current->addr;
-    }
-    if (current==NULL)
-        res = insertend(res,co,po);
-    return res;
+    NODE temp=start;
+    int i ,j;
+    for(i=1;i<=m;i++)
+    {
+        for(j=1;j<=n;j++)
+            {
+                if(temp!=NULL&&temp->row==i&&temp->col==j)
+                {
+                    printf("%d\t",temp->data);
+                    temp=temp->next;
 
-}
-NODE multiply (NODE poly1,NODE poly2)
-{
-    NODE p1,p2,res=NULL;
-    for(p1=poly1;p1!=NULL;p1=p1->addr)
-        for(p2=poly2;p2!=NULL;p2=p2->addr)
-        res=addterm(res,p1->co*p2->co,p1->po+p2->po);
-    return res;
+                }
+                else
+                    printf("0\t");
+            }
+            printf("\n");
+            }
 }
 int main()
 {
-    NODE poly1=NULL,poly2=NULL,poly;
-    int n,i,co,po;
-    printf("\n read no. of terms of first polynomial:");
-    scanf("%d",&n);
-    for(i=1;i<=n;i++)
+    NODE start=NULL;
+    int m,n,i,j,item;
+    printf("\n read the order of matrix\n");
+    scanf("%d%d",&m,&n);
+    printf("\n read elements\n");
+    for(i=1;i<=m;i++)
     {
-        printf("\n read co, po for %d term:",i);
-        scanf("%d%d",&co,&po);
-        poly1=insertend(poly1,co,po);
+        for(j=1;j<=n;j++)
+        {
+            scanf("%d",&item);
+            if(item!=0)
+                start=insertend(start,i,j,item);
 
+        }
     }
-    printf("\n first polynomial is \n");
-    display(poly1);
-    printf("\n read no. of terms of second polynomial:");
-    scanf("%d",&n);
-    for(i=1;i<=n;i++)
-    {
-        printf("\n read co, po for %d term:",i);
-        scanf("%d%d",&co,&po);
-        poly2=insertend(poly2,co,po);
-
-    }
-    printf("\n  second polynomial is \n");
-    display(poly2);
-    poly=multiply(poly1,poly2);
-    printf("\n the resultant polynomial is \n");
-    display(poly);
+    display (start);
+    printf("\n the sparse matrix is\n");
+    displaymatrix(start,m,n);
     return 0;
 }
